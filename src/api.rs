@@ -9,17 +9,17 @@
 //!
 //! [Esplora API]: <https://github.com/Blockstream/esplora/blob/master/API.md>
 
-use bitcoin::hash_types;
 use serde::Deserialize;
 use std::collections::HashMap;
 
 pub use bitcoin::consensus::{deserialize, serialize};
+use bitcoin::hash_types;
 use bitcoin::hash_types::TxMerkleNode;
 pub use bitcoin::hex::FromHex;
 pub use bitcoin::{
     absolute, block, transaction, Address, Amount, Block, BlockHash, CompactTarget, FeeRate,
-    OutPoint, Script, ScriptBuf, ScriptHash, Transaction, TxIn, TxOut, Txid, Weight, Witness,
-    Wtxid,
+    OutPoint, Script, ScriptBuf, ScriptHash, Sequence, Transaction, TxIn, TxOut, Txid, Weight,
+    Witness, Wtxid,
 };
 
 /// An input to a [`Transaction`].
@@ -39,7 +39,7 @@ pub struct Vin {
     #[serde(default)]
     pub witness: Witness,
     /// The sequence value for this input.
-    pub sequence: u32,
+    pub sequence: Sequence,
     /// Whether this is a coinbase input.
     pub is_coinbase: bool,
 }
@@ -412,7 +412,7 @@ impl EsploraTx {
                         vout: vin.vout,
                     },
                     script_sig: vin.scriptsig,
-                    sequence: bitcoin::Sequence(vin.sequence),
+                    sequence: vin.sequence,
                     witness: vin.witness,
                 })
                 .collect(),
