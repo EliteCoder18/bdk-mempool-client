@@ -122,7 +122,7 @@ pub struct EsploraTx {
     pub version: transaction::Version,
     /// The locktime of the [`Transaction`].
     /// Sets a time or height after which the [`Transaction`] can be mined.
-    pub locktime: u32,
+    pub locktime: absolute::LockTime,
     /// The array of inputs in the [`Transaction`].
     pub vin: Vec<Vin>,
     /// The array of outputs in the [`Transaction`].
@@ -401,7 +401,7 @@ impl EsploraTx {
     pub fn to_tx(&self) -> Transaction {
         Transaction {
             version: self.version,
-            lock_time: bitcoin::absolute::LockTime::from_consensus(self.locktime),
+            lock_time: self.locktime,
             input: self
                 .vin
                 .iter()
