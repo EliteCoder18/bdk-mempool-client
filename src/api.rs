@@ -232,8 +232,9 @@ pub struct BlockSummary {
 /// Statistics about an [`Address`].
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
 pub struct AddressStats {
-    /// The [`Address`], as a [`String`].
-    pub address: String,
+    /// The [`Address`].
+    #[serde(deserialize_with = "deserialize_address_assume_checked")]
+    pub address: Address,
     /// The summary of confirmed [`Transaction`]s for this [`Address`].
     pub chain_stats: AddressTxsSummary,
     /// The summary of unconfirmed mempool [`Transaction`]s for this [`Address`].
@@ -473,20 +474,17 @@ impl From<&EsploraTx> for Transaction {
     }
 }
 
-/// Deserializes a witness from a list of hex-encoded strings.
+/// Deserializes an [`Address`] from an Esplora address string.
 ///
-/// The Esplora API represents witness data as an array of hex strings,
-/// e.g. `["deadbeef", "cafebabe"]`. This deserializer decodes each string
-/// into raw bytes.
-fn deserialize_witness<'de, D>(d: D) -> Result<Vec<Vec<u8>>, D::Error>
+/// Esplora returns address strings without separately providing the expected
+/// network, so this deserializer parses the address and assumes the embedded
+/// network marker is correct.
+fn deserialize_address_assume_checked<'de, D>(d: D) -> Result<Address, D::Error>
 where
     D: serde::de::Deserializer<'de>,
 {
-    let list = Vec::<String>::deserialize(d)?;
-    list.into_iter()
-        .map(|hex_str| Vec::<u8>::from_hex(&hex_str))
-        .collect::<Result<Vec<Vec<u8>>, _>>()
-        .map_err(serde::de::Error::custom)
+    let address = Address::<bitcoin::address::NetworkUnchecked>::deserialize(d)?;
+    Ok(address.assume_checked())
 }
 
 /// Deserializes an optional [`FeeRate`] from an `f64` BTC/kvB value.
