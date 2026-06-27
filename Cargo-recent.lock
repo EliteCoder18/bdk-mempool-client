@@ -314,7 +314,7 @@ dependencies = [
 
 [[package]]
 name = "esplora-client"
-version = "0.12.2"
+version = "0.13.0"
 dependencies = [
  "bitcoin",
  "bitreq",
