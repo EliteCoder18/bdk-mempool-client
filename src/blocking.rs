@@ -45,7 +45,7 @@ use bitcoin::{Address, Amount, Block, BlockHash, FeeRate, MerkleBlock, Script, T
 use crate::{
     duration_to_timeout_secs, is_retryable, is_success, sat_per_vbyte_to_feerate, AddressStats,
     BlockInfo, BlockStatus, Builder, Error, EsploraTx, MempoolRecentTx, MempoolStats, MerkleProof,
-    OutputStatus, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo, BASE_BACKOFF_MILLIS,
+    OutputStatus, PreciseFees, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo, BASE_BACKOFF_MILLIS,
 };
 
 #[allow(deprecated)]
@@ -522,6 +522,9 @@ impl BlockingClient {
     ///
     /// Returns a [`HashMap`] where the key is the confirmation target in blocks
     /// and the value is the estimated [`FeeRate`].
+    #[deprecated(
+        note = "This method uses Mempool.space's deprecated `/fee-estimates` endpoint, which will be removed in a future Mempool release. Use `get_precise_fees()` instead."
+    )]
     pub fn get_fee_estimates(&self) -> Result<HashMap<u16, FeeRate>, Error> {
         let estimates_raw: HashMap<u16, f64> = self.get_response_json("/fee-estimates")?;
         let estimates = sat_per_vbyte_to_feerate(estimates_raw);
@@ -698,5 +701,13 @@ impl BlockingClient {
         let path = format!("/scripthash/{script_hash}/utxo");
 
         self.get_response_json(&path)
+    }
+
+    /// Get recommended fee estimates with sub-satoshi precision.
+    ///
+    /// Returns [`PreciseFees`] containing the current fee estimates from the
+    /// `/api/v1/fees/precise` endpoint.
+    pub fn get_precise_fees(&self) -> Result<PreciseFees, Error> {
+        self.get_response_json("/v1/fees/precise")
     }
 }
