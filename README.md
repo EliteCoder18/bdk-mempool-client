@@ -1,4 +1,4 @@
-# rust-esplora-client
+# rust-mempool-client
 
 <p>
     <a href="https://crates.io/crates/esplora-client"><img src="https://img.shields.io/crates/v/esplora-client.svg"/></a>
@@ -8,7 +8,20 @@
     <a href="https://github.com/bitcoindevkit/rust-esplora-client/actions/workflows/rust.yml"><img src="https://github.com/bitcoindevkit/rust-esplora-client/actions/workflows/rust.yml/badge.svg"></a>
 </p>
 
-Asynchronous and blocking clients and types for interacting with Esplora servers over HTTP.
+Asynchronous and blocking Rust client for interacting with the Mempool.space API.
+
+This project is initially a hard fork of `rust-esplora-client`, created to provide a dedicated client for the Mempool.space ecosystem. The long-term goal is to support both the original Mempool REST endpoints and the newer `/api/v1/*` API, while adding support for WebSocket connections as the Mempool API continues to evolve.
+
+>**Project Status:**
+>
+>This project is in its early stages. It is currently being developed as a dedicated client for the evolving Mempool.space API, with support for the complete Mempool API surface including existing REST endpoints, `/api/v1/*` endpoints, and WebSocket APIs being added incrementally.
+
+## Roadmap
+- [x] Bootstrap the crate from `rust-esplora-client`
+- [ ] Support existing Mempool REST endpoints
+- [ ] Add support for `/api/v1/*` REST endpoints
+- [ ] Add WebSocket API support
+- [ ] Expand coverage as the Mempool API evolves
 
 ## Developing
 

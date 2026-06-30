@@ -11,7 +11,7 @@ use bitcoin::hashes::Hash;
 use bitcoin::Amount;
 use bitcoin::BlockHash;
 
-use esplora_client::BlockStatus;
+use mempool_client::BlockStatus;
 
 use testenv::TestEnv;
 

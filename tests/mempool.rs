@@ -9,8 +9,8 @@ use std::collections::HashMap;
 
 use bitcoin::Amount;
 use bitcoin::FeeRate;
-use esplora_client::convert_fee_rate;
-use esplora_client::sat_per_vbyte_to_feerate;
+use mempool_client::convert_fee_rate;
+use mempool_client::sat_per_vbyte_to_feerate;
 
 use testenv::TestEnv;
 

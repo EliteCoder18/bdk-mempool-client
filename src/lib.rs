@@ -22,9 +22,9 @@
 //! Create a blocking client:
 //!
 //! ```rust,ignore
-//! use esplora_client::Builder;
+//! use mempool_client::Builder;
 //!
-//! fn main() -> Result<(), esplora_client::Error> {
+//! fn main() -> Result<(), mempool_client::Error> {
 //!     let builder = Builder::new("https://blockstream.info/testnet/api");
 //!     let blocking_client = builder.build_blocking();
 //!     let height = blocking_client.get_height()?;
@@ -36,10 +36,10 @@
 //! Create an async client:
 //!
 //! ```rust,ignore
-//! use esplora_client::Builder;
+//! use mempool_client::Builder;
 //!
 //! #[tokio::main]
-//! async fn main() -> Result<(), esplora_client::Error> {
+//! async fn main() -> Result<(), mempool_client::Error> {
 //! let builder = Builder::new("https://blockstream.info/testnet/api");
 //! let async_client = builder.build_async()?;
 //! let height = async_client.get_height().await?;
@@ -214,7 +214,7 @@ pub fn sat_per_vbyte_to_feerate(estimates: HashMap<u16, f64>) -> HashMap<u16, Fe
 ///
 /// # #[cfg(feature = "blocking")]
 /// # {
-/// let client = esplora_client::Builder::new("https://mempool.space/testnet/api")
+/// let client = mempool_client::Builder::new("https://mempool.space/testnet/api")
 ///     .timeout(Duration::from_secs(30))
 ///     .max_retries(4)
 ///     .header("user-agent", "my-wallet/0.1")

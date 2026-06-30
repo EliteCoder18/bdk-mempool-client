@@ -1,5 +1,5 @@
 [package]
-name = "esplora-client"
+name = "mempool-client"
 version = "0.12.2"
 edition = "2021"
 authors = [
@@ -11,12 +11,12 @@ homepage = "https://github.com/bitcoindevkit/rust-esplora-client"
 repository = "https://github.com/bitcoindevkit/rust-esplora-client"
 documentation = "https://docs.rs/esplora-client/"
 description = "Asynchronous and blocking clients and types for interacting with Esplora servers over HTTP"
-keywords = ["bitcoin", "esplora"]
+keywords = ["bitcoin", "mempool"]
 readme = "README.md"
 rust-version = "1.75.0" # MSRV
 
 [lib]
-name = "esplora_client"
+name = "mempool_client"
 path = "src/lib.rs"
 
 [dependencies]

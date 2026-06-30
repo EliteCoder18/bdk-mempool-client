@@ -11,15 +11,15 @@ alias z := zizmor
 alias p := pre-push
 
 _default:
-    @echo "> rust-esplora-client"
-    @echo "> Bitcoin Esplora API client library\n"
+    @echo "> rust-mempool-client"
+    @echo "> Bitcoin Mempool Space API client library\n"
     @just --list
 
 [doc: "Run `cargo audit`"]
 audit:
     cargo audit
 
-[doc: "Build `rust-esplora-client`"]
+[doc: "Build `rust-mempool-client`"]
 build:
     RBMT_LOG_LEVEL=progress cargo rbmt run build
 

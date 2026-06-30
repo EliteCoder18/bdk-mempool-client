@@ -18,8 +18,8 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! # use esplora_client::{Builder, r#async::AsyncClient};
-//! # async fn example() -> Result<(), esplora_client::Error> {
+//! # use mempool_client::{Builder, r#async::AsyncClient};
+//! # async fn example() -> Result<(), mempool_client::Error> {
 //!
 //! let client = Builder::new("https://mempool.space/api").build_async()?;
 //! let height = client.get_height().await?;

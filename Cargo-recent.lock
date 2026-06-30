@@ -313,26 +313,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "esplora-client"
-version = "0.12.2"
-dependencies = [
- "bitcoin",
- "bitreq",
- "electrsd",
- "hex-conservative",
- "log",
- "native-tls",
- "openssl",
- "openssl-sys",
- "security-framework 2.11.1",
- "serde",
- "serde_json",
- "tar",
- "tempfile",
- "tokio",
-]
-
-[[package]]
 name = "fastrand"
 version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -482,6 +462,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5aa361d4faea93603064a027415f07bd8e1d5c88c9fbf68bf56a285428fd79ce"
 dependencies = [
  "autocfg",
+]
+
+[[package]]
+name = "mempool-client"
+version = "0.12.2"
+dependencies = [
+ "bitcoin",
+ "bitreq",
+ "electrsd",
+ "hex-conservative",
+ "log",
+ "native-tls",
+ "openssl",
+ "openssl-sys",
+ "security-framework 2.11.1",
+ "serde",
+ "serde_json",
+ "tar",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]

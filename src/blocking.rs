@@ -16,9 +16,9 @@
 //! # Example
 //!
 //! ```rust,no_run
-//! # fn example() -> Result<(), esplora_client::Error> {
+//! # fn example() -> Result<(), mempool_client::Error> {
 //!
-//! let client = esplora_client::Builder::new("https://mempool.space/api").build_blocking();
+//! let client = mempool_client::Builder::new("https://mempool.space/api").build_blocking();
 //! let height = client.get_height()?;
 //!
 //! # Ok(())

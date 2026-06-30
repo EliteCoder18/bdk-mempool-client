@@ -20,10 +20,10 @@ use electrsd::electrum_client::ElectrumApi;
 use electrsd::ElectrsD;
 
 #[cfg(all(feature = "async", feature = "tokio"))]
-use esplora_client::AsyncClient;
+use mempool_client::AsyncClient;
 #[cfg(feature = "blocking")]
-use esplora_client::BlockingClient;
-use esplora_client::Builder;
+use mempool_client::BlockingClient;
+use mempool_client::Builder;
 
 fn setup_bitcoind() -> BitcoinD {
     let mut conf = bitcoind::Conf::default();
@@ -264,7 +264,7 @@ mod test {
     #[tokio::test]
     async fn test_that_errors_are_propagated() {
         use bitcoin::Amount;
-        use esplora_client::Error;
+        use mempool_client::Error;
 
         use crate::TestEnv;
 
