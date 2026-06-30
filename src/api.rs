@@ -393,6 +393,26 @@ pub struct MempoolFeesSubmitPackage {
     pub effective_includes: Option<Vec<Wtxid>>,
 }
 
+/// A set of recommended fee estimates.
+///
+/// Returned by both the `/api/v1/fees/recommended` and `/api/v1/fees/precise`
+/// endpoints. The precise endpoint provides sub-satoshi resolution; the
+/// recommended endpoint rounds to the nearest sat/vB.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RecommendedFees {
+    /// The recommended fee rate for the next block.
+    pub fastest_fee: f64,
+    /// The recommended fee rate targeting confirmation within approximately 30 minutes.
+    pub half_hour_fee: f64,
+    /// The recommended fee rate targeting confirmation within approximately one hour.
+    pub hour_fee: f64,
+    /// The recommended economical fee rate.
+    pub economy_fee: f64,
+    /// The minimum relay fee rate currently accepted.
+    pub minimum_fee: f64,
+}
+
 impl EsploraTx {
     /// Convert this [`EsploraTx`] into a [`Transaction`].
     ///

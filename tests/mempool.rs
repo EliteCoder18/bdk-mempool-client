@@ -73,6 +73,7 @@ fn test_feerate_parsing() {
     );
 }
 
+#[allow(deprecated)]
 #[tokio::test]
 async fn test_get_fee_estimates() {
     let env = TestEnv::new();

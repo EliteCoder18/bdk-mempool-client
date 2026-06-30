@@ -48,7 +48,8 @@ use bitreq::{Client, Method, Proxy, Request, RequestExt, Response};
 use crate::{
     duration_to_timeout_secs, is_retryable, is_success, sat_per_vbyte_to_feerate, AddressStats,
     BlockInfo, BlockStatus, Builder, Error, EsploraTx, MempoolRecentTx, MempoolStats, MerkleProof,
-    OutputStatus, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo, BASE_BACKOFF_MILLIS,
+    OutputStatus, RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo,
+    BASE_BACKOFF_MILLIS,
 };
 
 #[allow(deprecated)]
@@ -640,6 +641,9 @@ impl<S: Sleeper> AsyncClient<S> {
     ///
     /// Returns a [`HashMap`] where the key is the confirmation target in blocks
     /// and the value is the estimated [`FeeRate`].
+    #[deprecated(
+        note = "This method uses mempool.space's deprecated `/fee-estimates` endpoint, which will be removed in a future mempool release. Use `get_precise_fees()` instead."
+    )]
     pub async fn get_fee_estimates(&self) -> Result<HashMap<u16, FeeRate>, Error> {
         let estimates_raw: HashMap<u16, f64> = self.get_response_json("/fee-estimates").await?;
         let estimates = sat_per_vbyte_to_feerate(estimates_raw);
@@ -746,6 +750,23 @@ impl<S: Sleeper> AsyncClient<S> {
         let path = format!("/scripthash/{script_hash}/utxo");
 
         self.get_response_json(&path).await
+    }
+
+    /// Get fee estimates with sub-satoshi precision.
+    ///
+    /// Returns [`RecommendedFees`] containing the current fee estimates from the
+    /// `/api/v1/fees/precise` endpoint.
+    pub async fn get_precise_fees(&self) -> Result<RecommendedFees, Error> {
+        self.get_response_json("/v1/fees/precise").await
+    }
+
+    /// Get currently recommended fee estimates.
+    ///
+    /// Returns [`RecommendedFees`] containing the current fee estimates from the
+    /// `/api/v1/fees/recommended` endpoint. Values are rounded to the nearest
+    /// sat/vB. For sub-satoshi precision use [`Self::get_precise_fees`].
+    pub async fn get_recommended_fees(&self) -> Result<RecommendedFees, Error> {
+        self.get_response_json("/v1/fees/recommended").await
     }
 }
 
