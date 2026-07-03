@@ -47,9 +47,9 @@ use bitreq::{Client, Method, Proxy, Request, RequestExt, Response};
 
 use crate::{
     duration_to_timeout_secs, is_retryable, is_success, sat_per_vbyte_to_feerate, AddressStats,
-    BlockInfo, BlockStatus, Builder, Error, EsploraTx, MempoolRecentTx, MempoolStats, MerkleProof,
-    OutputStatus, RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo,
-    BASE_BACKOFF_MILLIS,
+    BlockInfo, BlockStatus, Builder, Error, EsploraTx, MempoolBlock, MempoolRecentTx, MempoolStats,
+    MerkleProof, OutputStatus, RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus,
+    Utxo, BASE_BACKOFF_MILLIS,
 };
 
 #[allow(deprecated)]
@@ -767,6 +767,17 @@ impl<S: Sleeper> AsyncClient<S> {
     /// sat/vB. For sub-satoshi precision use [`Self::get_precise_fees`].
     pub async fn get_recommended_fees(&self) -> Result<RecommendedFees, Error> {
         self.get_response_json("/v1/fees/recommended").await
+    }
+
+    /// Get the current mempool represented as projected blocks.
+    ///
+    /// Returns a [`Vec`] of [`MempoolBlock`], each representing a block's worth
+    /// of transactions currently in the mempool, ordered from next-to-confirm
+    /// to furthest from confirmation. Each entry includes the projected block
+    /// size, transaction count, total fees, median fee rate, and fee rate
+    /// distribution.
+    pub async fn get_mempool_block_fees(&self) -> Result<Vec<MempoolBlock>, Error> {
+        self.get_response_json("/v1/fees/mempool-blocks").await
     }
 }
 

@@ -413,6 +413,27 @@ pub struct RecommendedFees {
     pub minimum_fee: f64,
 }
 
+/// A projected mempool block.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MempoolBlock {
+    /// The projected block size in bytes.
+    pub block_size: usize,
+    /// The projected block size in virtual bytes.
+    pub block_v_size: f64,
+    /// The number of transactions in this projected block.
+    pub n_tx: usize,
+    /// The total fees paid by transactions in this projected block, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub total_fees: Amount,
+    /// The median fee rate in this projected block, in sat/vB.
+    pub median_fee: f64,
+    /// The fee rate distribution across this projected block, in sat/vB.
+    ///
+    /// Values are ordered from lowest to highest.
+    pub fee_range: Vec<f64>,
+}
+
 impl EsploraTx {
     /// Convert this [`EsploraTx`] into a [`Transaction`].
     ///
