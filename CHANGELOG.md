@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+* chore!: remove deprecated `BlockSummary` and `get_block` [#225]
+
+### Fixed
+
 ## [0.13.0] – 2026-06-28
 
 ### Added
