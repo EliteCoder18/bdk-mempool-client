@@ -543,6 +543,29 @@ pub struct HistoricalPrice {
     pub exchange_rates: ExchangeRates,
 }
 
+/// Address validation result.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct ValidateAddress {
+    /// Whether the address is valid.
+    #[serde(rename = "isvalid")]
+    pub is_valid: bool,
+    /// The address that was validated.
+    pub address: String,
+    /// The scriptPubKey hex for this address.
+    #[serde(rename = "scriptPubKey")]
+    pub script_pub_key: String,
+    /// Whether the address is a script hash (P2SH).
+    #[serde(rename = "isscript")]
+    pub is_script: bool,
+    /// Whether the address is a witness address (SegWit).
+    #[serde(rename = "iswitness")]
+    pub is_witness: bool,
+    /// The SegWit witness version, if applicable.
+    pub witness_version: Option<u8>,
+    /// The SegWit witness program hex, if applicable.
+    pub witness_program: Option<String>,
+}
+
 impl EsploraTx {
     /// Convert this [`EsploraTx`] into a [`Transaction`].
     ///

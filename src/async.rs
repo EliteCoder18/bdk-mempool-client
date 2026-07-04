@@ -49,7 +49,8 @@ use crate::{
     duration_to_timeout_secs, is_retryable, is_success, sat_per_vbyte_to_feerate, AddressStats,
     BlockInfo, BlockStatus, Builder, DifficultyAdjustment, Error, EsploraTx, HistoricalPrice,
     MempoolBlock, MempoolRecentTx, MempoolStats, MerkleProof, OutputStatus, Prices,
-    RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo, BASE_BACKOFF_MILLIS,
+    RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo, ValidateAddress,
+    BASE_BACKOFF_MILLIS,
 };
 
 #[allow(deprecated)]
@@ -828,6 +829,15 @@ impl<S: Sleeper> AsyncClient<S> {
         } else {
             format!("/v1/historical-price?{}", params.join("&"))
         };
+        self.get_response_json(&path).await
+    }
+
+    /// Validate a Bitcoin address.
+    ///
+    /// Returns a [`ValidateAddress`] indicating whether the address is valid,
+    /// its script type, and SegWit details if applicable.
+    pub async fn get_address_validation(&self, address: &str) -> Result<ValidateAddress, Error> {
+        let path = format!("/v1/validate-address/{address}");
         self.get_response_json(&path).await
     }
 }
