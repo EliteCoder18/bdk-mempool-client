@@ -47,9 +47,9 @@ use bitreq::{Client, Method, Proxy, Request, RequestExt, Response};
 
 use crate::{
     duration_to_timeout_secs, is_retryable, is_success, sat_per_vbyte_to_feerate, AddressStats,
-    BlockInfo, BlockStatus, Builder, Error, EsploraTx, MempoolBlock, MempoolRecentTx, MempoolStats,
-    MerkleProof, OutputStatus, RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus,
-    Utxo, BASE_BACKOFF_MILLIS,
+    BlockInfo, BlockStatus, Builder, DifficultyAdjustment, Error, EsploraTx, HistoricalPrice,
+    MempoolBlock, MempoolRecentTx, MempoolStats, MerkleProof, OutputStatus, Prices,
+    RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo, BASE_BACKOFF_MILLIS,
 };
 
 #[allow(deprecated)]
@@ -786,6 +786,49 @@ impl<S: Sleeper> AsyncClient<S> {
     /// distribution.
     pub async fn get_mempool_block_fees(&self) -> Result<Vec<MempoolBlock>, Error> {
         self.get_response_json("/v1/fees/mempool-blocks").await
+    }
+
+    /// Get difficulty adjustment statistics for the current epoch.
+    ///
+    /// Returns a [`DifficultyAdjustment`] containing progress, estimated retarget
+    /// date, remaining blocks, and block interval averages.
+    pub async fn get_difficulty_adjustment(&self) -> Result<DifficultyAdjustment, Error> {
+        self.get_response_json("/v1/difficulty-adjustment").await
+    }
+
+    /// Get the current Bitcoin price in multiple fiat currencies.
+    ///
+    /// Returns a [`Prices`] containing the latest price in USD, EUR, GBP, CAD,
+    /// CHF, AUD, and JPY from the `/api/v1/prices` endpoint.
+    pub async fn get_price(&self) -> Result<Prices, Error> {
+        self.get_response_json("/v1/prices").await
+    }
+
+    /// Get historical Bitcoin price data.
+    ///
+    /// Returns a [`HistoricalPrice`] containing price entries and exchange rates.
+    ///
+    /// `currency` filters results to a specific fiat currency (e.g. `"USD"`).
+    /// `timestamp` returns the price at or before that UNIX timestamp.
+    /// Both parameters are optional.
+    pub async fn get_historical_price(
+        &self,
+        currency: Option<&str>,
+        timestamp: Option<u64>,
+    ) -> Result<HistoricalPrice, Error> {
+        let mut params = vec![];
+        if let Some(c) = currency {
+            params.push(format!("currency={c}"));
+        }
+        if let Some(t) = timestamp {
+            params.push(format!("timestamp={t}"));
+        }
+        let path = if params.is_empty() {
+            "/v1/historical-price".to_string()
+        } else {
+            format!("/v1/historical-price?{}", params.join("&"))
+        };
+        self.get_response_json(&path).await
     }
 }
 

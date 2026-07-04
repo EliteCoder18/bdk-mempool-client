@@ -434,6 +434,115 @@ pub struct MempoolBlock {
     pub fee_range: Vec<f64>,
 }
 
+/// Difficulty adjustment statistics for the current epoch.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DifficultyAdjustment {
+    /// The percentage of the current epoch completed.
+    pub progress_percent: f64,
+    /// The estimated percentage change in difficulty at the next retarget.
+    pub difficulty_change: f64,
+    /// The estimated retarget date as a UNIX timestamp in milliseconds.
+    pub estimated_retarget_date: u64,
+    /// The number of blocks remaining until the next retarget.
+    pub remaining_blocks: u32,
+    /// The estimated remaining time until the next retarget, in seconds.
+    pub remaining_time: u64,
+    /// The percentage difficulty change from the previous retarget.
+    pub previous_retarget: f64,
+    /// The UNIX timestamp of the previous retarget block.
+    pub previous_time: u64,
+    /// The block height of the next retarget.
+    pub next_retarget_height: u32,
+    /// The average time between blocks in the current epoch, in milliseconds.
+    pub time_avg: u64,
+    /// The adjusted average time between blocks in the current epoch, in milliseconds.
+    pub adjusted_time_avg: u64,
+    /// The time offset applied to the average, in milliseconds.
+    pub time_offset: i64,
+    /// The expected number of blocks mined so far in the current epoch.
+    pub expected_blocks: f64,
+}
+
+/// Current Bitcoin price in multiple fiat currencies.
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "UPPERCASE")]
+pub struct Prices {
+    /// The UNIX timestamp of the price data.
+    #[serde(rename = "time")]
+    pub time: u64,
+    /// The price in US Dollars.
+    pub usd: u64,
+    /// The price in Euros.
+    pub eur: u64,
+    /// The price in British Pounds.
+    pub gbp: u64,
+    /// The price in Canadian Dollars.
+    pub cad: u64,
+    /// The price in Swiss Francs.
+    pub chf: u64,
+    /// The price in Australian Dollars.
+    pub aud: u64,
+    /// The price in Japanese Yen.
+    pub jpy: u64,
+}
+
+/// A Bitcoin price at a specific point in time.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "UPPERCASE")]
+pub struct HistoricalPricePoint {
+    /// The UNIX timestamp of this price entry.
+    #[serde(rename = "time")]
+    pub time: u64,
+    /// The price in US Dollars, if requested.
+    pub usd: Option<f64>,
+    /// The price in Euros, if requested.
+    pub eur: Option<f64>,
+    /// The price in British Pounds, if requested.
+    pub gbp: Option<f64>,
+    /// The price in Canadian Dollars, if requested.
+    pub cad: Option<f64>,
+    /// The price in Swiss Francs, if requested.
+    pub chf: Option<f64>,
+    /// The price in Australian Dollars, if requested.
+    pub aud: Option<f64>,
+    /// The price in Japanese Yen, if requested.
+    pub jpy: Option<f64>,
+}
+
+/// Fiat-to-fiat exchange rates returned alongside historical price data.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct ExchangeRates {
+    /// USD to EUR exchange rate.
+    #[serde(rename = "USDEUR")]
+    pub usd_eur: f64,
+    /// USD to GBP exchange rate.
+    #[serde(rename = "USDGBP")]
+    pub usd_gbp: f64,
+    /// USD to CAD exchange rate.
+    #[serde(rename = "USDCAD")]
+    pub usd_cad: f64,
+    /// USD to CHF exchange rate.
+    #[serde(rename = "USDCHF")]
+    pub usd_chf: f64,
+    /// USD to AUD exchange rate.
+    #[serde(rename = "USDAUD")]
+    pub usd_aud: f64,
+    /// USD to JPY exchange rate.
+    #[serde(rename = "USDJPY")]
+    pub usd_jpy: f64,
+}
+
+/// Historical Bitcoin price data.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HistoricalPrice {
+    /// The historical price entries for the requested currency and time range.
+    pub prices: Vec<HistoricalPricePoint>,
+    /// Fiat-to-fiat exchange rates at the time of the query.
+    pub exchange_rates: ExchangeRates,
+}
+
 impl EsploraTx {
     /// Convert this [`EsploraTx`] into a [`Transaction`].
     ///
