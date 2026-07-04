@@ -318,6 +318,14 @@ impl BlockingClient {
         self.get_opt_response(&format!("/tx/{txid}/raw"))
     }
 
+    /// Get a transaction serialized as hex, given its [`Txid`].
+    ///
+    /// Returns `None` if the transaction is not found.
+    pub fn get_tx_hex(&self, txid: &Txid) -> Result<Option<String>, Error> {
+        let path = format!("/tx/{txid}/hex");
+        self.get_opt_response_text(&path)
+    }
+
     /// Get a raw [`Transaction`] given its [`Txid`].
     ///
     /// Returns an [`Error::TransactionNotFound`] if the transaction is not found.

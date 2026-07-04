@@ -346,6 +346,14 @@ impl<S: Sleeper> AsyncClient<S> {
         self.get_opt_response(&format!("/tx/{txid}/raw")).await
     }
 
+    /// Get a transaction serialized as hex, given its [`Txid`].
+    ///
+    /// Returns `None` if the transaction is not found.
+    pub async fn get_tx_hex(&self, txid: &Txid) -> Result<Option<String>, Error> {
+        let path = format!("/tx/{txid}/hex");
+        self.get_opt_response_text(&path).await
+    }
+
     /// Get a raw [`Transaction`] given its [`Txid`].
     ///
     /// Returns an [`Error::TransactionNotFound`] if the transaction is not found.

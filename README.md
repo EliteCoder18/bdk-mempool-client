@@ -18,7 +18,7 @@ This project is initially a hard fork of `rust-esplora-client`, created to provi
 
 ## Roadmap
 - [x] Bootstrap the crate from `rust-esplora-client`
-- [ ] Support existing Mempool REST endpoints
+- [x] Support existing Mempool REST endpoints
 - [ ] Add support for `/api/v1/*` REST endpoints
 - [ ] Add WebSocket API support
 - [ ] Expand coverage as the Mempool API evolves
