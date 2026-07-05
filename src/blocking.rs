@@ -44,10 +44,10 @@ use bitcoin::{Address, Amount, Block, BlockHash, FeeRate, MerkleBlock, Script, T
 
 use crate::{
     duration_to_timeout_secs, is_retryable, is_success, sat_per_vbyte_to_feerate, AddressStats,
-    BlockInfo, BlockStatus, Builder, DifficultyAdjustment, Error, EsploraTx, HistoricalPrice,
-    MempoolBlock, MempoolRecentTx, MempoolStats, MerkleProof, OutputStatus, Prices,
-    RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo, ValidateAddress,
-    BASE_BACKOFF_MILLIS,
+    BlockAtTimestamp, BlockDetails, BlockInfo, BlockStatus, Builder, DifficultyAdjustment, Error,
+    EsploraTx, HistoricalPrice, MempoolBlock, MempoolRecentTx, MempoolStats, MerkleProof,
+    OutputStatus, Prices, RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo,
+    ValidateAddress, BASE_BACKOFF_MILLIS,
 };
 
 #[allow(deprecated)]
@@ -791,5 +791,71 @@ impl BlockingClient {
     pub fn get_address_validation(&self, address: &str) -> Result<ValidateAddress, Error> {
         let path = format!("/v1/validate-address/{address}");
         self.get_response_json(&path)
+    }
+
+    /// Get extended block details by block hash.
+    ///
+    /// Returns a [`BlockDetails`] containing both the standard [`BlockInfo`]
+    /// fields and mempool-specific [`BlockExtras`] statistics.
+    pub fn get_block_details(&self, hash: &BlockHash) -> Result<BlockDetails, Error> {
+        self.get_response_json(&format!("/v1/block/{hash}"))
+    }
+
+    /// Get [`BlockDetails`] for recent blocks.
+    ///
+    /// If `start_height` is `Some(h)`, returns blocks starting from height `h`.
+    /// If `start_height` is `None`, returns blocks starting from the current tip.
+    ///
+    /// Returns up to 15 blocks per call.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::InvalidResponse`] if the server returns an empty list.
+    pub fn get_blocks_details(
+        &self,
+        start_height: Option<u32>,
+    ) -> Result<Vec<BlockDetails>, Error> {
+        let path = match start_height {
+            Some(h) => format!("/v1/blocks/{h}"),
+            None => "/v1/blocks".to_string(),
+        };
+        let blocks: Vec<BlockDetails> = self.get_response_json(&path)?;
+        if blocks.is_empty() {
+            return Err(Error::InvalidResponse);
+        }
+        Ok(blocks)
+    }
+
+    /// Get [`BlockDetails`] for a range of blocks in bulk.
+    ///
+    /// Returns all blocks between `min_height` and `max_height` inclusive.
+    /// The range is limited to 10 blocks per call by the server.
+    ///
+    /// **Note:** This endpoint is disabled on the public mempool.space API.
+    /// It requires a self-hosted instance with `config.MEMPOOL.MAX_BLOCKS_BULK_QUERY`
+    /// set to a positive number.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::InvalidResponse`] if the server returns an empty list.
+    pub fn get_blocks_bulk(
+        &self,
+        min_height: u32,
+        max_height: u32,
+    ) -> Result<Vec<BlockDetails>, Error> {
+        let blocks: Vec<BlockDetails> =
+            self.get_response_json(&format!("/v1/blocks-bulk/{min_height}/{max_height}"))?;
+        if blocks.is_empty() {
+            return Err(Error::InvalidResponse);
+        }
+        Ok(blocks)
+    }
+
+    /// Get the block closest to a given timestamp.
+    ///
+    /// Returns a [`BlockAtTimestamp`] with the height, hash, and ISO 8601 timestamp
+    /// of the block nearest to `timestamp` (a UNIX timestamp in seconds).
+    pub fn get_block_by_timestamp(&self, timestamp: u64) -> Result<BlockAtTimestamp, Error> {
+        self.get_response_json(&format!("/v1/mining/blocks/timestamp/{timestamp}"))
     }
 }

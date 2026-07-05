@@ -566,6 +566,119 @@ pub struct ValidateAddress {
     pub witness_program: Option<String>,
 }
 
+/// Mining pool information for a block.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MiningPool {
+    /// The pool's internal identifier.
+    pub id: u32,
+    /// The pool's display name.
+    pub name: String,
+    /// The pool's URL slug.
+    pub slug: String,
+    /// The pool's known miner names, if any.
+    pub miner_names: Option<Vec<String>>,
+}
+
+/// Extended block statistics.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct BlockExtras {
+    /// Total fees collected in this block, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub total_fees: Amount,
+    /// Median fee rate in this block, in sat/vB.
+    pub median_fee: f64,
+    /// Fee rate distribution across this block, in sat/vB.
+    pub fee_range: Vec<f64>,
+    /// Total block reward (subsidy + fees), in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub reward: Amount,
+    /// The mining pool that mined this block.
+    pub pool: MiningPool,
+    /// Average fee per transaction in this block, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub avg_fee: Amount,
+    /// Average fee rate in this block, in sat/vB.
+    pub avg_fee_rate: f64,
+    /// The raw coinbase transaction hex.
+    pub coinbase_raw: String,
+    /// The primary coinbase output address, if applicable.
+    pub coinbase_address: Option<String>,
+    /// All coinbase output addresses.
+    pub coinbase_addresses: Vec<String>,
+    /// The coinbase script in human-readable form.
+    pub coinbase_signature: String,
+    /// The coinbase script decoded as ASCII.
+    pub coinbase_signature_ascii: Option<String>,
+    /// Average transaction size in this block, in bytes.
+    pub avg_tx_size: f64,
+    /// Total number of inputs across all transactions.
+    pub total_inputs: u32,
+    /// Total number of outputs across all transactions.
+    pub total_outputs: u32,
+    /// Total output amount across all transactions, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub total_output_amt: Amount,
+    /// Median fee amount per transaction in this block, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub median_fee_amt: Amount,
+    /// Fee percentile distribution in this block, in satoshis.
+    pub fee_percentiles: Vec<u64>,
+    /// Number of SegWit transactions in this block.
+    pub segwit_total_txs: u32,
+    /// Total size of SegWit transaction data, in bytes.
+    pub segwit_total_size: f64,
+    /// Total weight of SegWit transaction data.
+    pub segwit_total_weight: u64,
+    /// The raw block header hex.
+    pub header: String,
+    /// Net change in the UTXO set size from this block.
+    pub utxo_set_change: i64,
+    /// UTXO set size after this block.
+    pub utxo_set_size: u64,
+    /// Total input amount across all transactions, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub total_input_amt: Amount,
+    /// The block's virtual size in vbytes.
+    pub virtual_size: f64,
+    /// UNIX timestamp when this block was first seen, if available.
+    pub first_seen: Option<u64>,
+    /// Orphaned transactions replaced by this block, if any.
+    pub orphans: Vec<String>,
+    /// Percentage of expected transactions included in this block.
+    pub match_rate: Option<f64>,
+    /// Expected total fees for this block, in satoshis.
+    pub expected_fees: Option<u64>,
+    /// Expected total weight for this block.
+    pub expected_weight: Option<u64>,
+}
+
+/// Extended block information.
+///
+/// Extends [`BlockInfo`] with mempool-specific [`BlockExtras`] statistics.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct BlockDetails {
+    /// The standard block summary fields.
+    #[serde(flatten)]
+    pub info: BlockInfo,
+    /// Additional mempool-specific statistics for this block.
+    pub extras: BlockExtras,
+}
+
+/// The block closest to a given timestamp.
+///
+/// Returned by the `/api/v1/mining/blocks/timestamp/:timestamp` endpoint.
+#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
+pub struct BlockAtTimestamp {
+    /// The block height.
+    pub height: u32,
+    /// The block hash.
+    pub hash: BlockHash,
+    /// The block timestamp as an ISO 8601 datetime string.
+    pub timestamp: String,
+}
+
 impl EsploraTx {
     /// Convert this [`EsploraTx`] into a [`Transaction`].
     ///
