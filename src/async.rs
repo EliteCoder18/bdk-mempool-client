@@ -47,10 +47,10 @@ use bitreq::{Client, Method, Proxy, Request, RequestExt, Response};
 
 use crate::{
     duration_to_timeout_secs, is_retryable, is_success, sat_per_vbyte_to_feerate, AddressStats,
-    BlockAtTimestamp, BlockDetails, BlockInfo, BlockStatus, Builder, DifficultyAdjustment, Error,
-    EsploraTx, HistoricalPrice, MempoolBlock, MempoolRecentTx, MempoolStats, MerkleProof,
-    OutputStatus, Prices, RecommendedFees, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo,
-    ValidateAddress, BASE_BACKOFF_MILLIS,
+    BlockAtTimestamp, BlockDetails, BlockInfo, BlockStatus, Builder, CpfpInfo,
+    DifficultyAdjustment, Error, EsploraTx, HistoricalPrice, MempoolBlock, MempoolRecentTx,
+    MempoolStats, MerkleProof, OutputStatus, Prices, RbfInfo, RecommendedFees, ScriptHashStats,
+    SubmitPackageResult, TxStatus, Utxo, ValidateAddress, BASE_BACKOFF_MILLIS,
 };
 
 #[allow(deprecated)]
@@ -906,6 +906,38 @@ impl<S: Sleeper> AsyncClient<S> {
     /// of the block nearest to `timestamp` (a UNIX timestamp in seconds).
     pub async fn get_block_by_timestamp(&self, timestamp: u64) -> Result<BlockAtTimestamp, Error> {
         self.get_response_json(&format!("/v1/mining/blocks/timestamp/{timestamp}"))
+            .await
+    }
+
+    /// Get CPFP (Child Pays For Parent) data for a transaction.
+    ///
+    /// Returns a [`CpfpInfo`] describing the unconfirmed ancestors whose fees
+    /// are being boosted by this transaction, any descendants boosting this
+    /// transaction, and the effective fee rate across the package.
+    pub async fn get_tx_cpfp(&self, txid: &Txid) -> Result<CpfpInfo, Error> {
+        self.get_response_json(&format!("/v1/cpfp/{txid}")).await
+    }
+
+    /// Get RBF (Replace By Fee) replacement history for a transaction.
+    ///
+    /// Returns an [`RbfInfo`] containing the replacement tree for this
+    /// transaction and the transaction it replaced, if any.
+    pub async fn get_tx_rbf(&self, txid: &Txid) -> Result<RbfInfo, Error> {
+        self.get_response_json(&format!("/v1/tx/{txid}/rbf")).await
+    }
+
+    /// Get the first-seen timestamps for a list of transactions.
+    ///
+    /// Returns a [`Vec<u64>`] of UNIX timestamps, one per [`Txid`], in the
+    /// same order as the input. A value of `0` means the transaction was not
+    /// found in the mempool index.
+    pub async fn get_transaction_times(&self, txids: &[Txid]) -> Result<Vec<u64>, Error> {
+        let params = txids
+            .iter()
+            .map(|t| format!("txId[]={t}"))
+            .collect::<Vec<_>>()
+            .join("&");
+        self.get_response_json(&format!("/v1/transaction-times?{params}"))
             .await
     }
 }

@@ -679,6 +679,82 @@ pub struct BlockAtTimestamp {
     pub timestamp: String,
 }
 
+/// A transaction in a CPFP ancestor or descendant chain.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CpfpTransaction {
+    /// The transaction ID.
+    pub txid: Txid,
+    /// The fee paid by this transaction, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub fee: Amount,
+    /// The weight of this transaction.
+    pub weight: u64,
+    /// The adjusted virtual size used for fee-rate calculations.
+    pub adjusted_vsize: f64,
+    /// The number of signature operations in this transaction.
+    pub sigops: u32,
+    /// The effective fee rate in sat/vB.
+    pub fee_per_vsize: f64,
+    /// The adjusted effective fee rate in sat/vB.
+    pub adjusted_fee_per_vsize: f64,
+}
+
+/// CPFP (Child Pays For Parent) data for a transaction.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CpfpInfo {
+    /// Unconfirmed ancestor transactions boosted by this transaction's fee.
+    pub ancestors: Vec<CpfpTransaction>,
+    /// Unconfirmed descendant transactions that boost this transaction's fee.
+    #[serde(default)]
+    pub descendants: Vec<CpfpTransaction>,
+    /// The effective fee rate across the CPFP package, in sat/vB.
+    pub effective_fee_per_vsize: Option<f64>,
+}
+
+/// A compact transaction summary used within an RBF replacement tree.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct RbfTransaction {
+    /// The transaction ID.
+    pub txid: Txid,
+    /// The fee paid by this transaction, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub fee: Amount,
+    /// The virtual size of this transaction.
+    pub vsize: f64,
+    /// The total output value of this transaction, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub value: Amount,
+}
+
+/// A node in an RBF replacement tree.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RbfTree {
+    /// The transaction at this node.
+    pub tx: RbfTransaction,
+    /// The UNIX timestamp when this replacement was first seen.
+    pub time: u64,
+    /// Milliseconds since the previous replacement, if known.
+    pub interval: Option<u64>,
+    /// Whether this is a full RBF replacement (without opt-in signaling).
+    pub full_rbf: bool,
+    /// Whether this transaction has been mined.
+    pub mined: bool,
+    /// The transactions this one replaced.
+    pub replaces: Vec<RbfTree>,
+}
+
+/// RBF replacement history for a transaction.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct RbfInfo {
+    /// The replacement tree for this transaction, if it was replaced.
+    pub replacements: Option<RbfTree>,
+    /// The transaction this one replaced, if any.
+    pub replaces: Option<RbfTree>,
+}
+
 impl EsploraTx {
     /// Convert this [`EsploraTx`] into a [`Transaction`].
     ///
