@@ -14,7 +14,6 @@ use std::collections::HashMap;
 
 pub use bitcoin::consensus::{deserialize, serialize};
 use bitcoin::hash_types;
-use bitcoin::hash_types::TxMerkleNode;
 pub use bitcoin::hex::FromHex;
 pub use bitcoin::{
     absolute, block, transaction, Address, Amount, Block, BlockHash, CompactTarget, FeeRate,
@@ -209,24 +208,6 @@ pub struct BlockTime {
     pub timestamp: u64,
     /// The block height of the [`Block`].
     pub height: u32,
-}
-
-/// Summary about a [`Block`].
-#[allow(deprecated)]
-#[deprecated(since = "0.13.0", note = "use `BlockInfo` instead")]
-#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
-pub struct BlockSummary {
-    /// The [`BlockHash`] of the [`Block`].
-    pub id: BlockHash,
-    /// The UNIX timestamp and height of the [`Block`].
-    #[serde(flatten)]
-    pub time: BlockTime,
-    /// The [`BlockHash`] of the previous [`Block`].
-    ///
-    /// `None` for the genesis block.
-    pub previousblockhash: Option<BlockHash>,
-    /// The Merkle root of this [`Block`].
-    pub merkle_root: TxMerkleNode,
 }
 
 /// Statistics about an [`Address`].

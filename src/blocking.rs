@@ -48,9 +48,6 @@ use crate::{
     OutputStatus, ScriptHashStats, SubmitPackageResult, TxStatus, Utxo, BASE_BACKOFF_MILLIS,
 };
 
-#[allow(deprecated)]
-use crate::BlockSummary;
-
 /// A synchronous client for interacting with an Esplora API server.
 ///
 /// Use [`Builder`] to construct an instance of this client. The client stores
@@ -637,27 +634,6 @@ impl BlockingClient {
         };
 
         self.get_response_json(&path)
-    }
-
-    /// Get [`BlockInfo`] summaries for recent [`Block`]s.
-    ///
-    /// If `height` is `Some(h)`, returns blocks starting from height `h`.
-    /// If `height` is `None`, returns blocks starting from the current tip.
-    ///
-    /// The maximum number of summaries returned depends on the backend itself:
-    /// Esplora returns `10` while [mempool.space](https://mempool.space/docs/api) returns `15`.
-    #[allow(deprecated)]
-    #[deprecated(since = "0.13.0", note = "use `get_block_infos` instead")]
-    pub fn get_blocks(&self, height: Option<u32>) -> Result<Vec<BlockSummary>, Error> {
-        let path = match height {
-            Some(height) => format!("/blocks/{height}"),
-            None => "/blocks".to_string(),
-        };
-        let blocks: Vec<BlockSummary> = self.get_response_json(&path)?;
-        if blocks.is_empty() {
-            return Err(Error::InvalidResponse);
-        }
-        Ok(blocks)
     }
 
     /// Get [`BlockInfo`] summaries for recent [`Block`]s.
