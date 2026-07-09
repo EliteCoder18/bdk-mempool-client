@@ -755,6 +755,51 @@ pub struct RbfInfo {
     pub replaces: Option<RbfTree>,
 }
 
+/// A compact transaction summary used within a mempool replacement tree.
+///
+/// Similar to [`RbfTransaction`] but includes additional fields.
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReplacementTransaction {
+    /// The transaction ID.
+    pub txid: Txid,
+    /// The fee paid by this transaction, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub fee: Amount,
+    /// The virtual size of this transaction.
+    pub vsize: f64,
+    /// The total output value of this transaction, in satoshis.
+    #[serde(with = "bitcoin::amount::serde::as_sat")]
+    pub value: Amount,
+    /// The fee rate of this transaction, in sat/vB.
+    pub rate: f64,
+    /// Whether this transaction signals opt-in RBF (BIP125).
+    pub rbf: bool,
+    /// Whether this is a full RBF replacement (without opt-in signaling).
+    #[serde(default)]
+    pub full_rbf: bool,
+}
+
+/// A node in a mempool replacement tree.
+///
+/// Returned as elements of the list from [`BlockingClient::get_replacements`]
+/// and [`BlockingClient::get_fullrbf_replacements`].
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReplacementTree {
+    /// The transaction at this node.
+    pub tx: ReplacementTransaction,
+    /// The UNIX timestamp when this replacement was first seen.
+    pub time: u64,
+    /// Whether this is a full RBF replacement (without opt-in signaling).
+    ///
+    /// Absent on opt-in RBF entries returned by `/api/v1/replacements`; defaults to `false`.
+    #[serde(default)]
+    pub full_rbf: bool,
+    /// The transactions this one replaced, if any.
+    pub replaces: Option<Vec<ReplacementTree>>,
+}
+
 impl EsploraTx {
     /// Convert this [`EsploraTx`] into a [`Transaction`].
     ///

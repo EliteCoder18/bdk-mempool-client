@@ -46,8 +46,8 @@ use crate::{
     duration_to_timeout_secs, is_retryable, is_success, sat_per_vbyte_to_feerate, AddressStats,
     BlockAtTimestamp, BlockDetails, BlockInfo, BlockStatus, Builder, CpfpInfo,
     DifficultyAdjustment, Error, EsploraTx, HistoricalPrice, MempoolBlock, MempoolRecentTx,
-    MempoolStats, MerkleProof, OutputStatus, Prices, RbfInfo, RecommendedFees, ScriptHashStats,
-    SubmitPackageResult, TxStatus, Utxo, ValidateAddress, BASE_BACKOFF_MILLIS,
+    MempoolStats, MerkleProof, OutputStatus, Prices, RbfInfo, RecommendedFees, ReplacementTree,
+    ScriptHashStats, SubmitPackageResult, TxStatus, Utxo, ValidateAddress, BASE_BACKOFF_MILLIS,
 };
 
 #[allow(deprecated)]
@@ -888,5 +888,23 @@ impl BlockingClient {
             .collect::<Vec<_>>()
             .join("&");
         self.get_response_json(&format!("/v1/transaction-times?{params}"))
+    }
+
+    /// Get recent opt-in RBF replacement transactions from the mempool.
+    ///
+    /// Returns a list of [`ReplacementTree`] nodes representing the most recent
+    /// RBF (Replace By Fee) replacements detected in the mempool, including
+    /// both opt-in and full-RBF replacements.
+    pub fn get_replacements(&self) -> Result<Vec<ReplacementTree>, Error> {
+        self.get_response_json("/v1/replacements")
+    }
+
+    /// Get recent full-RBF replacement transactions from the mempool.
+    ///
+    /// Returns a list of [`ReplacementTree`] nodes representing only the
+    /// full-RBF replacements detected in the mempool, those that replaced
+    /// transactions without opt-in signaling.
+    pub fn get_full_rbf_replacements(&self) -> Result<Vec<ReplacementTree>, Error> {
+        self.get_response_json("/v1/fullrbf/replacements")
     }
 }
