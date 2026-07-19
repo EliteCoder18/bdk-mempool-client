@@ -393,6 +393,7 @@ dependencies = [
  "bitcoin",
  "bitreq",
  "electrsd",
+ "esplora-types",
  "hex-conservative 0.2.2",
  "log",
  "native-tls",
@@ -404,6 +405,14 @@ dependencies = [
  "tar",
  "tempfile",
  "tokio",
+]
+
+[[package]]
+name = "esplora-types"
+version = "0.1.0"
+dependencies = [
+ "bitcoin",
+ "serde",
 ]
 
 [[package]]
