@@ -12,7 +12,7 @@ repository = "https://github.com/bitcoindevkit/rust-esplora-client"
 documentation = "https://docs.rs/esplora-client/"
 description = "Asynchronous and blocking clients and types for interacting with Esplora servers over HTTP"
 keywords = ["bitcoin", "esplora"]
-readme = "../README.md"
+readme = "README.md"
 rust-version = "1.75.0" # MSRV
 
 [lib]
