@@ -307,6 +307,24 @@ impl BlockingClient {
         }
     }
 
+    /// Makes a GET request to `path` on this client's configured server and
+    /// deserializes the JSON response as `T`.
+    ///
+    /// This is a deliberately public extension point: it reuses this
+    /// client's base URL, proxy, header, retry, and timeout configuration
+    /// without exposing any other internal request-building machinery.
+    /// It exists so that sibling crates building support for
+    /// server-specific endpoints beyond the standard Esplora API (for
+    /// example a `mempool-client` adding `mempool.space`-only endpoints)
+    /// can reuse this client's HTTP plumbing instead of reimplementing it.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`Error`] if the request fails or JSON deserialization fails.
+    pub fn get_json<T: serde::de::DeserializeOwned>(&self, path: &str) -> Result<T, Error> {
+        self.get_response_json(path)
+    }
+
     /// Get a raw [`Transaction`] given its [`Txid`].
     ///
     /// Returns `None` if the transaction is not found.
