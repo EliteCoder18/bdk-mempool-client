@@ -1,0 +1,30 @@
+[package]
+name = "mempool-client"
+version = "0.1.0"
+edition = "2021"
+authors = [
+  "Alekos Filini <alekos.filini@gmail.com>",
+  "Bitcoin Dev Kit Developers"
+]
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/bitcoindevkit/rust-esplora-client"
+repository = "https://github.com/bitcoindevkit/rust-esplora-client"
+documentation = "https://docs.rs/mempool-client/"
+description = "Blocking and async clients for mempool.space, built on esplora-client"
+keywords = ["bitcoin", "mempool"]
+rust-version = "1.75.0" # MSRV
+
+[lib]
+name = "mempool_client"
+
+[dependencies]
+esplora-client = { path = "../esplora-client", version = "0.13.0", default-features = false, features = ["blocking", "blocking-https"] }
+mempool-types = { path = "../mempool-types", version = "0.1.0" }
+serde = { version = "1.0.194", features = ["derive"] }
+
+# Only used by the architecture-comparison examples under `examples/`, to
+# demonstrate a mempool-client-owned request helper that doesn't rely on
+# any `esplora-client` extension point. Not a dependency of the real
+# `mempool_client` library code.
+[dev-dependencies]
+bitreq = { version = "0.3.7", features = ["https", "json-using-serde"] }
