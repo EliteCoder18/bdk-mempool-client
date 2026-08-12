@@ -9,7 +9,8 @@ use bitcoin::hashes::Hash;
 use bitcoin::Amount;
 use bitcoin::Transaction;
 use bitcoin::Txid;
-use electrsd::bitcoind::get_available_port;
+use esplora_client::Error;
+use esplora_testenv::bitcoind::get_available_port;
 use std::collections::HashMap;
 use tokio::io::AsyncReadExt;
 use tokio::net::TcpListener;
@@ -17,6 +18,34 @@ use tokio::net::TcpListener;
 use testenv::TestEnv;
 
 mod testenv;
+
+#[tokio::test]
+async fn test_that_errors_are_propagated() {
+    let env = TestEnv::new();
+    let (blocking_client, async_client) = env.setup_clients();
+
+    let address = env.get_legacy_address();
+    let txid = env
+        .bitcoind_client()
+        .send_to_address(&address, Amount::from_sat(1000))
+        .unwrap()
+        .txid()
+        .unwrap();
+    env.mine_and_wait(1);
+
+    let tx = blocking_client.get_tx(&txid).unwrap().unwrap();
+    let async_error = async_client.broadcast(&tx).await.unwrap_err();
+    let blocking_error = blocking_client.broadcast(&tx).unwrap_err();
+
+    assert!(matches!(
+        async_error,
+        Error::HttpResponse { status: 400, message } if message.contains("-27")
+    ));
+    assert!(matches!(
+        blocking_error,
+        Error::HttpResponse { status: 400, message } if message.contains("-27")
+    ));
+}
 
 #[tokio::test]
 async fn test_get_tx() {

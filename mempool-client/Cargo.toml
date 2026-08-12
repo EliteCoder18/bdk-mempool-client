@@ -20,6 +20,10 @@ path = "src/lib.rs"
 esplora-client = { path = "../esplora-client", version = "0.13" }
 mempool-types = { path = "../mempool-types", version = "0.1" }
 
+[dev-dependencies]
+esplora-testenv = { path = "../testenv" }
+tokio = { version = "1", features = ["full"] }
+
 [features]
 default = ["blocking", "blocking-https", "async", "async-https", "tokio"]
 

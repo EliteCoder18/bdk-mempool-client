@@ -1,0 +1,18 @@
+[package]
+name = "esplora-testenv"
+version = "0.1.0"
+edition = "2021"
+authors = ["Bitcoin Dev Kit Developers"]
+license = "MIT OR Apache-2.0"
+description = "Shared regtest environment for Esplora-compatible client integration tests"
+publish = false
+rust-version = "1.75.0"
+
+[dependencies]
+bitcoin = { version = "0.32", features = ["std"], default-features = false }
+electrsd = { version = "0.40.0", default-features = false, features = ["legacy", "esplora_a33e97e1", "bitcoind_download", "bitcoind_29_0"] }
+
+# Keep the test environment compatible with the workspace MSRV.
+tar = { version = "0.4.45" }
+log = { version = "0.4.29" }
+tempfile = { version = "=3.15.0" }

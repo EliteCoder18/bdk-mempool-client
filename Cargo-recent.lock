@@ -318,7 +318,7 @@ version = "0.13.0"
 dependencies = [
  "bitcoin",
  "bitreq",
- "electrsd",
+ "esplora-testenv",
  "esplora-types",
  "hex-conservative",
  "log",
@@ -331,6 +331,17 @@ dependencies = [
  "tar",
  "tempfile",
  "tokio",
+]
+
+[[package]]
+name = "esplora-testenv"
+version = "0.1.0"
+dependencies = [
+ "bitcoin",
+ "electrsd",
+ "log",
+ "tar",
+ "tempfile",
 ]
 
 [[package]]
@@ -498,7 +509,9 @@ name = "mempool-client"
 version = "0.1.0"
 dependencies = [
  "esplora-client",
+ "esplora-testenv",
  "mempool-types",
+ "tokio",
 ]
 
 [[package]]

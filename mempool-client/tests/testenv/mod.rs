@@ -5,7 +5,7 @@
 use std::collections::HashMap;
 use std::ops::Deref;
 
-use esplora_client::{AsyncClient, BlockingClient, Builder};
+use mempool_client::{AsyncClient, BlockingClient, Builder};
 
 pub(crate) use esplora_testenv::Config as EnvConfig;
 
